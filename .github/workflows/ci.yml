@@ -25,12 +25,11 @@ jobs:
       - name: Install dependencies
         run: |
           opam update
-          opam install dune -y
           opam install . --deps-only --with-test -y
 
       - name: Build
-        run: |
-          opam exec -- dune build
+        run: opam exec -- dune build @install @runtest
+
 
       - name: Run tests
         run: |
