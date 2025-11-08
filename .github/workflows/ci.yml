@@ -25,6 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           opam update
+          opam install dune -y
           opam install . --deps-only --with-test -y
 
       - name: Build
