@@ -1,43 +1,44 @@
-name: Lab2
+name: OCaml CI
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
-    name: Build and Test
-    runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        ocaml-compiler: [5.2.0]
+        os: [ubuntu-latest]
+        ocaml-compiler: ["4"]
+        task: ["Task14", "Task16"]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Set up OCaml
+      - name: Set up OCaml ${{ matrix.ocaml-compiler }}
         uses: ocaml/setup-ocaml@v3
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
       - name: Install dependencies
-        run: |
-          opam update
-          opam install dune -y
-          opam install . --deps-only --with-test -y
+        run: opam install . --deps-only --with-test --with-dev-setup
+        working-directory: ./Lab1/${{ matrix.task }}
 
-      - name: Build
-        run: opam exec -- dune build @install @runtest
+      - name: Check formatting
+        run: opam exec -- dune fmt
+        working-directory: ./Lab1/${{ matrix.task }}
 
+      - name: Build project
+        run: opam exec -- dune build
+        working-directory: ./Lab1/${{ matrix.task }}
+
+      - name: Increase stack size
+        run: ulimit -s unlimited
 
       - name: Run tests
-        run: |
-          opam exec -- dune runtest --no-buffer
-
-      - name: Lint (optional)
-        if: always()
-        run: |
-          opam install ocamlformat -y
-          dune fmt --check || echo "Formatting issues found"
+        run: opam exec -- dune run
+        working-directory: ./Lab1/${{ matrix.task }}
