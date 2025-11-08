@@ -28,11 +28,11 @@ jobs:
 
       - name: Build
         run: |
-          dune build
+          opam exec -- dune build
 
       - name: Run tests
         run: |
-          dune runtest --no-buffer
+          opam exec -- dune runtest --no-buffer
 
       - name: Lint (optional)
         if: always()
