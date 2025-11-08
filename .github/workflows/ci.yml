@@ -1,0 +1,42 @@
+name: Lab2
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        ocaml-compiler: [5.2.0]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+
+      - name: Install dependencies
+        run: |
+          opam install . --deps-only --with-test -y
+
+      - name: Build
+        run: |
+          dune build
+
+      - name: Run tests
+        run: |
+          dune runtest --no-buffer
+
+      - name: Lint (optional)
+        if: always()
+        run: |
+          opam install ocamlformat -y
+          dune fmt --check || echo "Formatting issues found"
+

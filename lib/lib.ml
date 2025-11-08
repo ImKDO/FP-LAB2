@@ -1,0 +1,1 @@
+module HashMap = Hashmap

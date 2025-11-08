@@ -1,0 +1,5 @@
+(executable
+ (public_name Lab2)
+ (name main)
+ (modules main)
+ (libraries Lab2))

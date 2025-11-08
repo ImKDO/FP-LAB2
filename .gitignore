@@ -1,0 +1,28 @@
+# OCaml
+*.annot
+*.cmo
+*.cma
+*.cmi
+*.a
+*.o
+*.cmx
+*.cmxs
+*.cmxa
+
+# Dune
+_build/
+*.install
+*.opam
+
+# Merlin
+.merlin
+
+# Editor
+.vscode/
+*.swp
+*~
+.DS_Store
+
+# IDE
+.idea/
+*.iml
