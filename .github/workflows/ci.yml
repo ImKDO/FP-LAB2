@@ -2,7 +2,7 @@ name: Lab2
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -24,6 +24,8 @@ jobs:
 
       - name: Install dependencies
         run: |
+          opam update
+          opam install dune -y
           opam install . --deps-only --with-test -y
 
       - name: Build
@@ -39,4 +41,3 @@ jobs:
         run: |
           opam install ocamlformat -y
           dune fmt --check || echo "Formatting issues found"
-
