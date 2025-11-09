@@ -25,20 +25,21 @@ jobs:
 
       - name: Install dependencies
         run: |
-          opam install .
-        working-directory: .
+          opam exec -- dune build --profile=release @install
+          opam install . --deps-only --with-test --with-dev-setup
+        working-directory: ..
 
       - name: Check formatting
         run: opam exec -- dune fmt
-        working-directory: .
+        working-directory: ..
 
       - name: Build project
         run: opam exec -- dune build
-        working-directory: .
+        working-directory: ..
 
       - name: Increase stack size
         run: ulimit -s unlimited
 
       - name: Run tests
         run: opam exec -- dune run
-        working-directory: .
+        working-directory: ..
