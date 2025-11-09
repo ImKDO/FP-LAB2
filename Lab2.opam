@@ -1,0 +1,40 @@
+opam-version: "2.0"
+name: "fp_lab2"
+synopsis: "Immutable polymorphic HashMap implementation"
+description: """
+A functional HashMap data structure with monoid properties,
+implemented using open addressing. Includes comprehensive unit
+and property-based tests.
+"""
+maintainer: ["Maintainer Name <maintainer@example.com>"]
+authors: ["Author Name <author@example.com>"]
+license: "MIT"
+tags: ["functional-programming" "data-structures" "hashmap" "immutable"]
+homepage: "https://github.com/username/reponame"
+doc: "https://url/to/documentation"
+bug-reports: "https://github.com/username/reponame/issues"
+
+depends: [
+  "ocaml"
+  "ocamlformat"
+  "dune" {>= "3.0"}
+  "alcotest"
+  "qcheck"
+  "qcheck-alcotest"
+]
+
+build: [
+  ["dune" "subst"] {dev}
+  [
+    "dune"
+    "build"
+    "-p"
+    name
+    "-j"
+    jobs
+    "@install"
+    "@runtest"
+  ]
+]
+
+dev-repo: "git+https://github.com/username/reponame.git"
