@@ -25,8 +25,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          opam exec -- dune build --profile=release @install
-          opam install . --deps-only --with-test --with-dev-setup
+          opam install .
         working-directory: .
 
       - name: Check formatting
