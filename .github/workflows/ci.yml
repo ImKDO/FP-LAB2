@@ -1,43 +1,65 @@
-name: OCaml CI
+name: Builds, tests & co
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  - push
+  - pull_request
+
+permissions: read-all
 
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        ocaml-compiler: ["4"]
+        os:
+          - ubuntu-latest
+
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout repository
+      - name: Checkout tree
         uses: actions/checkout@v5
 
-      - name: Set up OCaml ${{ matrix.ocaml-compiler }}
+      - name: Set-up OCaml
         uses: ocaml/setup-ocaml@v3
         with:
-          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+          ocaml-compiler: 5
 
-      - name: Install dependencies
-        run: opam install . --deps-only --with-test --with-dev-setup
-        working-directory: ..
+      - run: opam install . --deps-only --with-test
 
-      - name: Check formatting
-        run: opam exec -- dune fmt
-        working-directory: ..
+      - run: opam exec -- dune build
 
-      - name: Build project
-        run: opam exec -- dune build
-        working-directory: ..
+      - run: opam exec -- dune runtest
 
-      - name: Increase stack size
-        run: ulimit -s unlimited
+  lint-doc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tree
+        uses: actions/checkout@v5
+      - name: Set-up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: 5
+      - uses: ocaml/setup-ocaml/lint-doc@v3
 
-      - name: Run tests
-        run: opam exec -- dune run
-        working-directory: ..
+  lint-fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tree
+        uses: actions/checkout@v5
+      - name: Set-up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: 5
+      - uses: ocaml/setup-ocaml/lint-fmt@v3
+
+  lint-opam:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tree
+        uses: actions/checkout@v5
+      - name: Set-up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: 5
+      - uses: ocaml/setup-ocaml/lint-opam@v3
