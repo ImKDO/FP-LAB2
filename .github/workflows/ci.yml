@@ -24,9 +24,7 @@ jobs:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
       - name: Install dependencies
-        run: |
-          opam exec -- dune build --profile=release @install
-          opam install . --deps-only --with-test --with-dev-setup
+        run: opam install . --deps-only --with-test --with-dev-setup
         working-directory: ..
 
       - name: Check formatting
