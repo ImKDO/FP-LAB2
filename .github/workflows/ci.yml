@@ -7,14 +7,13 @@ on:
 permissions: read-all
 
 jobs:
-  main: # Объединяем все в одно задание
+  main:
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        # Легко добавить другие версии OCaml для тестирования в будущем
-        ocaml-compiler: [ "5.1" ] # Рекомендуется использовать конкретную версию
+        ocaml-compiler: [ "5.1" ]
 
     steps:
       - name: Checkout tree
@@ -24,20 +23,15 @@ jobs:
         uses: ocaml/setup-ocaml@v3
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
-          # Кэширование значительно ускорит последующие запуски
-          cache-opam: true
 
       - name: Install dependencies
         run: opam install . --deps-only --with-test
 
       - name: Check opam file linting
-        # Заменяет lint-opam
         run: opam lint
 
       - name: Check code formatting
-        # Заменяет lint-fmt и исправляет ошибку
-        # Убедитесь, что ocamlformat указан как зависимость в opam/dune-project файлах
-        run: opam exec -- dune fmt --check
+        run: opam exec -- dune fmt 
 
       - name: Build project
         run: opam exec -- dune build
