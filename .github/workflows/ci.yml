@@ -29,15 +29,15 @@ jobs:
 
       - name: Check formatting
         run: opam exec -- dune fmt
-        working-directory: ./
+        working-directory: .
 
       - name: Build project
         run: opam exec -- dune build
-        working-directory: ./
+        working-directory: .
 
       - name: Increase stack size
         run: ulimit -s unlimited
 
       - name: Run tests
         run: opam exec -- dune run
-        working-directory: ./
+        working-directory: .
