@@ -1,65 +1,50 @@
 name: Builds, tests & co
 
 on:
-  - push
-  - pull_request
+  push:
+  pull_request:
 
 permissions: read-all
 
 jobs:
-  build:
+  main: # Объединяем все в одно задание
+    runs-on: ubuntu-latest
+
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-
-    runs-on: ${{ matrix.os }}
+        # Легко добавить другие версии OCaml для тестирования в будущем
+        ocaml-compiler: [ "5.1" ] # Рекомендуется использовать конкретную версию
 
     steps:
       - name: Checkout tree
         uses: actions/checkout@v5
 
-      - name: Set-up OCaml
+      - name: Set-up OCaml ${{ matrix.ocaml-compiler }}
         uses: ocaml/setup-ocaml@v3
         with:
-          ocaml-compiler: 5
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+          # Кэширование значительно ускорит последующие запуски
+          cache-opam: true
 
-      - run: opam install . --deps-only --with-test
+      - name: Install dependencies
+        run: opam install . --deps-only --with-test
 
-      - run: opam exec -- dune build
+      - name: Check opam file linting
+        # Заменяет lint-opam
+        run: opam lint
 
-      - run: opam exec -- dune runtest
+      - name: Check code formatting
+        # Заменяет lint-fmt и исправляет ошибку
+        # Убедитесь, что ocamlformat указан как зависимость в opam/dune-project файлах
+        run: opam exec -- dune fmt --check
 
-  lint-doc:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout tree
-        uses: actions/checkout@v5
-      - name: Set-up OCaml
-        uses: ocaml/setup-ocaml@v3
-        with:
-          ocaml-compiler: 5
-      - uses: ocaml/setup-ocaml/lint-doc@v3
+      - name: Build project
+        run: opam exec -- dune build
 
-  lint-fmt:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout tree
-        uses: actions/checkout@v5
-      - name: Set-up OCaml
-        uses: ocaml/setup-ocaml@v3
-        with:
-          ocaml-compiler: 5
-      - uses: ocaml/setup-ocaml/lint-fmt@v3
+      - name: Run tests
+        run: opam exec -- dune runtest
 
-  lint-opam:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout tree
-        uses: actions/checkout@v5
-      - name: Set-up OCaml
-        uses: ocaml/setup-ocaml@v3
-        with:
-          ocaml-compiler: 5
-      - uses: ocaml/setup-ocaml/lint-opam@v3
+      - name: Build documentation
+        # Заменяет lint-doc. Этот шаг проверяет, что документация собирается.
+        run: opam exec -- dune build @doc
